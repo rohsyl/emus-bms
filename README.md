@@ -1,4 +1,4 @@
-# Home Py
+# EMUS BMS
 
 This project is a set of python scripts used to retrieved data (about Battery Voltage, Power, Current, Temperature, ...) through serial ports **EMUS Battery Managment System**.
 
