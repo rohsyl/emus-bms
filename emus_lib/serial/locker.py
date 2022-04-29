@@ -25,8 +25,8 @@ class Locker:
             f = open(Locker.__get_file_name(what), 'r')
             s_date = f.read()
 
-            #if len(s_date) != len(LOCK_DATE_FORMAT):
-            #    return False
+            if len(s_date) != len(LOCK_DATE_FORMAT):
+                return False
 
             c_datetime = datetime.strptime(s_date, LOCK_DATE_FORMAT)
 

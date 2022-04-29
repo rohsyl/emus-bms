@@ -52,6 +52,17 @@ class Db:
         cursor.close()
         del cursor
 
+    def insert_daily_report(self, parameter, source, value, date):
+        cursor = self.db.cursor()
+        sql = "INSERT INTO `daily_reports` (`paramenter_nr`, `data_source`, `value`, `created_at`, `updated_at`) VALUES (%s, %s, %s, %s, %s);"
+        val = (parameter, source, value, date, date)
+        self.logger.info('Insert into db: ' + sql)
+        self.logger.info(val)
+        cursor.execute(sql, val)
+        self.db.commit()
+        cursor.close()
+        del cursor
+
     def insert_emus(self, values):
         jsons = json.dumps(values)
         cursor = self.db.cursor()
@@ -65,9 +76,9 @@ class Db:
     def insert_emus_data(self, id, sentence, values, date):
         jsons = json.dumps(values)
         cursor = self.db.cursor()
-        sql = "INSERT INTO `battery_data` (`battery_id`, `sentence`, `json`, `created_at`, `updated_at`) VALUES (%s, %s, %s, %s, NOW());"
-        val = (id, sentence, jsons, date)
-        self.logger.info('Insert into db: ' + sql)
+        sql = "INSERT INTO `battery_data` (`battery_id`, `sentence`, `json`, `created_day`, `created_at`, `updated_at`) VALUES (%s, %s, %s, %s, %s, NOW());"
+        val = (id, sentence, jsons, date, date)
+        self.logger.info('Insert into db: Battery_id=' + str(id) + ' Sentence=' + sentence + ' Json=' + jsons + ' Date=' + date)
         cursor.execute(sql, val)
         self.db.commit()
         cursor.close()

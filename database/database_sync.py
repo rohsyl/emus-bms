@@ -33,7 +33,8 @@ class DbSync:
         db.set_logger(self.loggerName)
         db.open()
         cursor = db.db.cursor()
-        sql = "SELECT `id`, `payload`, `attempt`, `created_at` FROM `jobs` WHERE `queue` = %s;"
+        sql = "SELECT `id`, `payload`, `attempt`, `created_at` FROM `jobs` WHERE `queue` = %s " \
+              "ORDER BY created_at DESC LIMIT 0,500; "
         val = (self.queue, )
         cursor.execute(sql, val)
         jobs = cursor.fetchall()

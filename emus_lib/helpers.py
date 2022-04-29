@@ -1,6 +1,9 @@
 import importlib
 import json
 import logging
+import sys
+from logging import handlers
+from emus_lib.constants import *
 
 
 def crc_checksum(sentence):
@@ -44,6 +47,19 @@ def enc(response):
 def dec(data):
     return json.loads(data)
 
+def init_logging(name):
+    logging.addLevelName(LOG_LEVEL_DEBUG_DEEPER, "DEBUG_DEEP")
+    logger = get_logger(name)
+    logger.setLevel(logging.DEBUG)
+    c_handler = logging.StreamHandler(sys.stdout)
+    f_handler = handlers.RotatingFileHandler('/home/pi/homepy/log/'+name+'.log', maxBytes=(1048576*5), backupCount=7)
+    c_format = logging.Formatter('%(levelname)s - %(message)s')
+    f_format = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    c_handler.setFormatter(c_format)
+    f_handler.setFormatter(f_format)
+    logger.addHandler(c_handler)
+    logger.addHandler(f_handler)
+    return logger
 
 def get_logger(name):
     return logging.getLogger(name)

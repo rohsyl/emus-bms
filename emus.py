@@ -4,14 +4,16 @@
 """
     :author: sylvain.roh
     :version:
+        2022-04-29        sylvain.roh
+            cleaning code
         2018-12-30 v0.1   sylvain.roh
             initial release
 """
 import threading
-import time
 import sys
 from library.db import Db
 from emus_lib.constants import *
+from config.config import *
 from emus_lib.helpers import *
 from emus_lib.serial.emus import EmusSerial
 from emus_lib.serial.locker import Locker
@@ -19,7 +21,7 @@ from logging import handlers
 
 from emus_lib.queue.responsequeue import ResponseQueue
 
-SER_PORT_NAME = '/dev/ttyUSB1'
+SER_PORT_NAME = EMUS_SERIAL_PORT
 
 SEN_ONLY = [
     SEN_BV1,
@@ -33,12 +35,11 @@ SEN_RESPONSE_DEFINITION = {
 
 
 def main():
-    logger = init_logging('emus')
+    init_logging('emus')
 
     # wait until the emus.serial is unlocked
     while Locker.is_locked('emus'):
         pass
-
 
     # lock the emus.serial to avoid access to the serial by other process
     # and to tell other process that i'm using it
@@ -55,7 +56,6 @@ def main():
     thread = threading.Thread(target=serial.read, args=[False])
     thread.start()
 
-    print(SEN_RESPONSE_DEFINITION)
     for request in SEN_RESPONSE_DEFINITION.keys():
         serial.write(request)
 
@@ -93,7 +93,7 @@ def main():
         for d in items['BV2']:
             entry = d['values'];
             j = entry['CELL NUMBER OF FIRST CELL IN GROUP']
-            while j < entry['SIZE OF GROUP'] + entry['CELL NUMBER OF FIRST CELL IN GROUP'] :
+            while j < entry['SIZE OF GROUP'] + entry['CELL NUMBER OF FIRST CELL IN GROUP']:
                 bv2_values.append(entry['INDIVIDUAL CELL VOLTAGE'][j - entry['CELL NUMBER OF FIRST CELL IN GROUP']])
                 j += 1
 
@@ -114,24 +114,7 @@ def main():
     db.insert_emus(values)
     db.close()
 
-    print('end')
     sys.exit(0)
-
-
-
-def init_logging(name):
-    logging.addLevelName(LOG_LEVEL_DEBUG_DEEPER, "DEBUG_DEEP")
-    logger = get_logger(name)
-    logger.setLevel(logging.DEBUG)
-    c_handler = logging.StreamHandler(sys.stdout)
-    f_handler = handlers.RotatingFileHandler('/home/pi/homepy/log/'+name+'.log', maxBytes=(1048576*5), backupCount=7)
-    c_format = logging.Formatter('%(levelname)s - %(message)s')
-    f_format = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-    c_handler.setFormatter(c_format)
-    f_handler.setFormatter(f_format)
-    logger.addHandler(c_handler)
-    logger.addHandler(f_handler)
-    return logger
 
 
 if __name__ == '__main__':
