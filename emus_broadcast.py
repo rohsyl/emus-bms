@@ -17,7 +17,6 @@ from emus_lib.helpers import *
 from emus_lib.serial.emus import EmusSerial
 from emus_lib.serial.locker import Locker
 from logging import handlers
-from database.database_sync import DbSync
 
 from emus_lib.queue.responsequeue import ResponseQueue
 
@@ -99,17 +98,9 @@ def main():
 
     print(items)
 
-    db_sync = DbSync('emus_data')
-    for item in items:
-        payload = {
-            'job': {'module': 'jobs.emus_data_sync_job', 'class_name': 'EmusDataSyncJob'},
-            'data': items[item]
-        }
-        db_sync.insertJob(payload)
-        print('insert job')
-        print(payload)
-
-    print('end')
+    # here you can send your data to a database...
+    # see emus.py for an exemple.
+    
     sys.exit(0)
 
 
